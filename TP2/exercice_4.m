@@ -61,13 +61,13 @@ end
 fprintf('Score de l''estimation par EM : %.3f\n',score);
 
 function p = probabilites_EM(D_app,param, proportion_1,proportion_2, sigma)
-    p = [proportion_1/sigma * exp(calcul_r(D_app, param(1,:)).^2 / (2*sigma^2)) / (proportion_1/sigma * exp(calcul_r(D_app, param(1,:)).^2 / (2*sigma^2)) + proportion_2/sigma * exp(calcul_r(D_app, param(2,:)).^2 / (2*sigma^2)));
-        proportion_2/sigma * exp(calcul_r(D_app, param(2,:)).^2 / (2*sigma^2)) / (proportion_1/sigma * exp(calcul_r(D_app, param(1,:)).^2 / (2*sigma^2)) + proportion_2/sigma * exp(calcul_r(D_app, param(2,:)).^2 / (2*sigma^2)))];
+    p = [(proportion_1/sigma) * exp(-calcul_r(D_app, param(1,:)).^2 / (2*sigma^2)) ./ (proportion_1/sigma * exp(-calcul_r(D_app, param(1,:)).^2 / (2*sigma^2)) + proportion_2/sigma * exp(-calcul_r(D_app, param(2,:)).^2 / (2*sigma^2)));
+         (proportion_2/sigma) * exp(-calcul_r(D_app, param(2,:)).^2 / (2*sigma^2)) ./ (proportion_1/sigma * exp(-calcul_r(D_app, param(1,:)).^2 / (2*sigma^2)) + proportion_2/sigma * exp(-calcul_r(D_app, param(2,:)).^2 / (2*sigma^2)))];
 end
 
 function mc = moindres_carres_ponderes(D_app, proba)
     n = size(D_app, 2);
-    A = [D_app(1,:)'.^2 D_app(1,:)'.*D_app(2,:)' D_app(2,:)'.^2 D_app(1,:)' D_app(2,:)' ones(n,1)];
+    A = [D_app(1,:)'.^2 D_app(1,:)'.*D_app(2,:)' D_app(2,:)'.^2 D_app(1,:)' D_app(2,:)' ones(n,1)] .* proba';
     A = [A; 1 0 1 0 0 0];
     B = [zeros(n,1); 1];
     mc = A \ B;
