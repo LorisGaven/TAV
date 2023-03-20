@@ -103,13 +103,15 @@ function [moyenne,variance] = estimation(echantillons)
 end
 
 function AD = attache_donnees(I,moyennes,variances)
+    [h, w] = size(I);
+    AD = zeros(h, w, length(moyennes));
     for i = 1:length(moyennes)
-        AD(:,:,i) = (log(variances(i)) + ((I - moyennes(i)).^2 / variances(i)^2) ) / 2;
+        AD(:,:,i) = (log(variances(i)) + ((I - moyennes(i)).^2 / variances(i))) / 2.0;
     end
 end
 
 function R = regularisation(k_voisins,k_courant,k_nouveau)
-    R = sum(1 - (k_voisins == k_nouveau), 'all') - k_courant ~= k_nouveau;
+    R = sum(1 - (k_voisins == k_nouveau), 'all');
 end
 
 function [U_new,k_new] = recuit(U,k,AD,T,beta)
